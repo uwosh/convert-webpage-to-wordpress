@@ -4,6 +4,9 @@
 var rp = require('request-promise');
 var cheerio = require('cheerio');
 
+// Import the files we need
+var SiteMap = require("./SiteMap");
+
 // Running code
 var options = {
     uri: 'https://uwosh.edu',
@@ -15,7 +18,10 @@ var options = {
 rp(options)
     .then(function ($) {
         // Process html like you would with jQuery...
-        console.log($('.site-title h1 a').text().trim());
+        var siteTitle = $('.site-title h1 a').text().trim();
+        var siteMap = new SiteMap();
+        var sitemapTxt = siteMap.getSiteMap(siteTitle);
+        console.log("Sitemap: " + sitemapTxt);
     })
     .catch(function (err) {
         // Crawling failed or Cheerio choked...
