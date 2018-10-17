@@ -4,8 +4,9 @@
   "description": "Take a generic webpage from UW-Fox and UW-FDL and automatically convert it to a WordPress webpage on the UWO WordPress server.",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node node_modules/ts-node/dist/bin.js ./src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",
@@ -18,11 +19,9 @@
   },
   "homepage": "https://github.com/uwosh/convert-webpage-to-wordpress#readme",
   "devDependencies": {
-    "cheerio": "^1.0.0-rc.2",
-    "eslint-config-prettier": "^3.0.1",
-    "eslint-plugin-prettier": "^2.6.2",
+    "eslint-config-prettier": "^3.1.0",
+    "eslint-plugin-prettier": "^2.7.0",
     "prettier": "1.14.2",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.2"
+    "puppeteer": "^1.9.0"
   }
 }
