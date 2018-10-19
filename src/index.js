@@ -261,12 +261,15 @@ let main = async () => {
     let fdlSiteURL = "http://fdl.uwc.edu/";
     let fdlSiteDir = "fdl.uwc.edu";
 
+    // fetch URLs for each campus' news stories
     let foxArticleURLs = await fetchArticleURLs(browser, foxSiteURL);
     let fdlArticleURLs = await fetchArticleURLs(browser, fdlSiteURL);
 
+    // scrape each campus' news stories
     let foxArticles = await loadArticleData("assets/foxData.json", foxArticleURLs);
     let fdlArticles = await loadArticleData("assets/foxData.json", fdlArticleURLs);
 
+    // download images for each campus news story
     let foxImageDownloadStatus = await scrapeImages(
         browser,
         foxArticles,
