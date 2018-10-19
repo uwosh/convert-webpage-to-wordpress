@@ -235,6 +235,17 @@ let scrapeImages = async (browser, articles, site, siteDir) => {
         "Error on image download";
 };
 
+let loadArticleData = async (path, urls) => {
+    let articles = null;
+    if (!fs.existsSync(path)) {
+        articles = await scrapeArticlesURLArray(browser, urls);
+        fs.writeFileSync(path, JSON.stringify(articles));
+    } else {
+        articles = JSON.parse(fs.readFileSync(path));
+    }
+    return articles;
+};
+
 let main = async () => {
     // setup
     const browser = await puppeteer.launch({
@@ -249,23 +260,8 @@ let main = async () => {
     let foxArticleURLs = await fetchArticleURLs(browser, foxSiteURL);
     let fdlArticleURLs = await fetchArticleURLs(browser, fdlSiteURL);
 
-    let foxArticles = null;
-    let foxDataPath = "assets/foxData.json";
-    if (!fs.existsSync(foxDataPath)) {
-        foxArticles = await scrapeArticlesURLArray(browser, foxArticleURLs);
-        fs.writeFileSync(foxDataPath, JSON.stringify(foxArticles));
-    } else {
-        foxArticles = JSON.parse(fs.readFileSync(foxDataPath));
-    }
-
-    let fdlArticles = null;
-    let fdlDataPath = "assets/fdlData.json";
-    if (!fs.existsSync(fdlDataPath)) {
-        fdlArticles = await scrapeArticlesURLArray(browser, fdlArticleURLs);
-        fs.writeFileSync(fdlDataPath, JSON.stringify(fdlArticles));
-    } else {
-        fdlArticles = JSON.parse(fs.readFileSync(fdlDataPath));
-    }
+    let foxArticles = await loadArticleData("assets/foxData.json", foxArticleURLs);
+    let fdlArticles = await loadArticleData("assets/foxData.json", fdlArticleURLs);
 
     let foxImageDownloadStatus = await scrapeImages(
         browser,
