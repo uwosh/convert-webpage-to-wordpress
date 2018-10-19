@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+const fs = require("fs");
 
 // goes to the site specified and grabs an array of news URLs that matches "campus/news/releases"
 let fetchArticleURLs = async (browser, site) => {
@@ -165,8 +166,32 @@ let downloadImages = async (browser, imageSources, site) => {
   return true;
 };
 
+let cleanSiteImageAssets = async site => {
+  site = "assets/" + site;
+  // removing the site folder if it exists
+  if (fs.existsSync(site)) {
+    fs.readdirSync(site).forEach(function(file, index) {
+      var curPath = site + "/" + file;
+      if (fs.lstatSync(curPath).isDirectory()) {
+        // recurse
+        deleteFolderRecursive(curPath);
+      } else {
+        // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(site);
+  }
+
+  // make directory if it exists
+  if (!fs.existsSync(site)) {
+    fs.mkdirSync(site);
+  }
+};
+
 let scrapeImages = async (browser, articles, site) => {
   let imageSources = await scrapeImagesSources(browser, articles, site);
+  await cleanSiteImageAssets(site);
   let downloadImagesStatus = await downloadImages(browser, imageSources, site);
   return downloadImagesStatus
     ? "Images successfully downloaded"
@@ -180,7 +205,9 @@ let main = async () => {
   });
 
   let foxSiteURL = "http://uwfox.uwc.edu/";
+  let foxSiteDir = "uwfox.uwc.edu";
   let fdlSiteURL = "http://fdl.uwc.edu/";
+  let fdlSiteDir = "fdl.uwc.edu";
 
   let foxArticleURLs = await fetchArticleURLs(browser, foxSiteURL);
   let fdlArticleURLs = await fetchArticleURLs(browser, fdlSiteURL);
