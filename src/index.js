@@ -161,6 +161,7 @@ let scrapeImagesSources = async (browser, articles, site) => {
     return imagesByPost;
 };
 
+// actually goes the the URL of the images and downloads them to the assets folder
 let downloadImages = async (browser, imageSources, path) => {
     console.log("Path: " + path);
     // TODO: build image downloading functionality
@@ -196,6 +197,7 @@ let downloadImages = async (browser, imageSources, path) => {
     return true;
 };
 
+// purges the image assets folder
 let cleanSiteImageAssets = async site => {
     site = "assets/" + site;
     // removing the site folder if it exists
@@ -222,6 +224,7 @@ let cleanSiteImageAssets = async site => {
     }
 };
 
+// worker for scraping the images
 let scrapeImages = async (browser, articles, site, siteDir) => {
     let imageSources = await scrapeImagesSources(browser, articles, site);
     await cleanSiteImageAssets(siteDir);
@@ -235,6 +238,7 @@ let scrapeImages = async (browser, articles, site, siteDir) => {
         "Error on image download";
 };
 
+// checks to see if there is saved data on the local file system, if not, rerun the web scraping
 let loadArticleData = async (path, urls) => {
     let articles = null;
     if (!fs.existsSync(path)) {
