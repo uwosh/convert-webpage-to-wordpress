@@ -21,7 +21,6 @@ let fetchArticleURLs = async (browser, site) => {
     return links;
   }, site);
 
-  page.close();
   // return scrape
   return allLinks;
 };
@@ -32,7 +31,6 @@ let scrapeNewsArticleData = async (browser, url) => {
   let response = await page.goto(url);
 
   if (response._status === 403) {
-    page.close();
     throw "Status of page is 403!";
   }
 
@@ -112,7 +110,6 @@ let scrapeNewsArticleData = async (browser, url) => {
     };
   });
 
-  page.close();
   return articleData;
 };
 
@@ -160,7 +157,6 @@ let scrapeImagesSources = async (browser, articles, site) => {
     imagesByPost.push(selectedImages);
   }
 
-  parserPage.close();
   return imagesByPost;
 };
 
@@ -192,11 +188,19 @@ let main = async () => {
   let foxArticles = await scrapeArticlesURLArray(browser, foxArticleURLs);
   let fdlArticles = await scrapeArticlesURLArray(browser, fdlArticleURLs);
 
-  let foxImages = await scrapeImages(browser, foxArticles, foxSiteURL);
-  let fdlImages = await scrapeImages(browser, fdlArticles, fdlSiteURL);
+  let foxImageDownloadStatus = await scrapeImages(
+    browser,
+    foxArticles,
+    foxSiteURL
+  );
+  let fdlImageDownloadStatus = await scrapeImages(
+    browser,
+    fdlArticles,
+    fdlSiteURL
+  );
 
-  console.log("fox images: " + foxImages);
-  console.log("fdl images: " + fdlImages);
+  console.log("fox images status: " + foxImageDownloadStatus);
+  console.log("fdl images status: " + fdlImageDownloadStatus);
 
   browser.close();
 };
