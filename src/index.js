@@ -1,5 +1,11 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+const exec = require('child_process').exec;
+
+// function that logs output from shell execution
+function log(error, stdout, stderr) {
+    console.log(stdout)
+}
 
 // goes to the site specified and grabs an array of news URLs that matches "campus/news/releases"
 let fetchArticleURLs = async (browser, site) => {
@@ -163,7 +169,6 @@ let scrapeImagesSources = async (browser, articles, site) => {
 
 // actually goes the the URL of the images and downloads them to the assets folder
 let downloadImages = async (browser, imageSources, path) => {
-    console.log("Path: " + path);
     // TODO: build image downloading functionality
     for (let i = 0; i < imageSources.length; i++) {
         let postImagePath = path + "/" + i;
@@ -239,7 +244,7 @@ let scrapeImages = async (browser, articles, site, siteDir) => {
 };
 
 // checks to see if there is saved data on the local file system, if not, rerun the web scraping
-let loadArticleData = async (path, urls) => {
+let loadArticleData = async (browser, path, urls) => {
     let articles = null;
     if (!fs.existsSync(path)) {
         articles = await scrapeArticlesURLArray(browser, urls);
@@ -250,7 +255,8 @@ let loadArticleData = async (path, urls) => {
     return articles;
 };
 
-let main = async () => {
+// runs all of the functions needed to scrape news stories for UW-Fox and UW-FDL
+let scrapingWorker = async () => {
     // setup
     const browser = await puppeteer.launch({
         headless: true
@@ -266,27 +272,36 @@ let main = async () => {
     let fdlArticleURLs = await fetchArticleURLs(browser, fdlSiteURL);
 
     // scrape each campus' news stories
-    let foxArticles = await loadArticleData("assets/foxData.json", foxArticleURLs);
-    let fdlArticles = await loadArticleData("assets/foxData.json", fdlArticleURLs);
+    let foxArticles = await loadArticleData(browser, "assets/foxData.json", foxArticleURLs);
+    let fdlArticles = await loadArticleData(browser, "assets/fdlData.json", fdlArticleURLs);
 
     // download images for each campus news story
-    let foxImageDownloadStatus = await scrapeImages(
+    await scrapeImages(
         browser,
         foxArticles,
         foxSiteURL,
         foxSiteDir
     );
-    let fdlImageDownloadStatus = await scrapeImages(
+    await scrapeImages(
         browser,
         fdlArticles,
         fdlSiteURL,
         fdlSiteDir
     );
 
-    console.log("fox images status: " + foxImageDownloadStatus);
-    console.log("fdl images status: " + fdlImageDownloadStatus);
-
     browser.close();
+    return {
+        foxArticles,
+        fdlArticles
+    }
 };
+
+let main = async () => {
+    console.log("Begin scraping worker...");
+    let scrappedData = await scrapingWorker();
+    console.log("End scraping worker.");
+
+    exec("ls -la", log); // sample shell command
+}
 
 main();
