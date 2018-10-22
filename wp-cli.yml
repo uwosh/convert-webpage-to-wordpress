@@ -1,0 +1,5 @@
+@test:
+  ssh: awstest/var/www/html
+
+@dev:
+  ssh: awsdev/var/www/html
