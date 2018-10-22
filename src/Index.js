@@ -15,7 +15,7 @@ class Index {
     }
 
     async main() {
-        // let scraper = await Scraper.main();
+        let scraper = await Scraper.main();
 
         exec("ls -la", this.log); // sample shell command
     }
