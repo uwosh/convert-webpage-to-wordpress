@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 
-export default class Scraper {
+class Scraper {
     // goes to the site specified and grabs an array of news URLs that matches "campus/news/releases"
     static async fetchArticleURLs(browser, site) {
         // setup
@@ -298,3 +298,5 @@ export default class Scraper {
         return scrappedData;
     }
 }
+
+module.exports = Scraper;

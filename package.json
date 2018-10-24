@@ -4,8 +4,7 @@
   "description": "Take a generic webpage from UW-Fox and UW-FDL and automatically convert it to a WordPress webpage on the UWO WordPress server.",
   "main": "dist/Index.js",
   "scripts": {
-    "build": "rimraf dist/ && babel ./src --out-dir dist/ --copy-files",
-    "start": "npm run build && node dist/Index.js",
+    "start": "node src/Index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc"
   },
@@ -20,12 +19,9 @@
   },
   "homepage": "https://github.com/uwosh/convert-webpage-to-wordpress#readme",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
     "eslint-config-prettier": "^3.1.0",
     "eslint-plugin-prettier": "^2.7.0",
     "prettier": "1.14.2",
-    "puppeteer": "^1.9.0",
-    "rimraf": "^2.6.2"
+    "puppeteer": "^1.9.0"
   }
 }
