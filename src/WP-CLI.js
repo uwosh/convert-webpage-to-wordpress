@@ -1,7 +1,7 @@
 // importing npm packages
 const execSync = require('child_process').execSync;
 
-// Defining Class variables
+// Defining global variables
 const _WP_CLI = "/usr/local/bin/wp ";
 const _WP_TEST_SSH = "@test ";
 const _WP_DEV_SSH = "@dev ";
@@ -13,19 +13,17 @@ let siteID = null;
 
 class WPCLI {
     constructor() {
-        // exec(_WP_TEST_SSH + "--url=" + _WP_TEST_SITE + _SITE + " user list", this.log); // sample shell command
-        this.getSiteID(_WP_TEST_SSH, _WP_TEST_SITE + _SITE);
+        let targetSSH = _WP_TEST_SSH
+        let targetSite = _WP_TEST_SITE + _SITE;
+
+        let siteID = this.getSiteID(targetSSH, targetSite);
+        console.log("siteID: " + siteID);
     }
 
-    async getSiteID(env, site) {
+    getSiteID(env, site) {
         let command = _WP_CLI + env + "--url=" + site + " eval 'echo get_current_blog_id();'";
         let response = execSync(command).toString();
-        console.log(response);
-    }
-
-    // function that logs output from shell execution
-    log(error, stdout, stderr) {
-        console.log(stdout)
+        return response;
     }
 }
 
