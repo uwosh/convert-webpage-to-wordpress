@@ -228,14 +228,18 @@ class Scraper {
     static async scrapeImages(browser, articles, site, siteDir) {
         let imageSources = await this.scrapeImagesSources(browser, articles, site);
         await this.cleanSiteImageAssets(siteDir);
-        let downloadImagesStatus = await this.downloadImages(
+        await this.downloadImages(
             browser,
             imageSources,
             "assets/" + siteDir
         );
-        return downloadImagesStatus ?
-            "Images successfully downloaded" :
-            "Error on image download";
+
+        // stitch the image sources into the article object
+        for (let i = 0; i < articles.length; i++) {
+            articles[i]["originalImageSources"] = imageSources[i];
+        }
+
+        return articles;
     };
 
     // checks to see if there is saved data on the local file system, if not, rerun the web scraping
@@ -271,13 +275,13 @@ class Scraper {
         let fdlArticles = await this.loadArticleData(browser, "assets/fdlData.json", fdlArticleURLs);
 
         // download images for each campus news story
-        await this.scrapeImages(
+        foxArticles = await this.scrapeImages(
             browser,
             foxArticles,
             foxSiteURL,
             foxSiteDir
         );
-        await this.scrapeImages(
+        fdlArticles = await this.scrapeImages(
             browser,
             fdlArticles,
             fdlSiteURL,

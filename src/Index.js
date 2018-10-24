@@ -8,7 +8,7 @@ class Index {
     }
 
     async main() {
-        // let scrapedData = await Scraper.main();
+        let scrapedData = await Scraper.main();
         let wpcli = new WPCLI();
     }
 }
