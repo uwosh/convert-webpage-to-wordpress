@@ -61,5 +61,7 @@ typings/
 .next
 
 # excluding the assets that we download from web scraping
-dist
 assets
+
+# exclude compiled dist files
+dist

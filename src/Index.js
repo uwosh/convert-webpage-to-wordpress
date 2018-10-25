@@ -1,6 +1,6 @@
 // importing classes
-import Scraper from "./Scraper";
-import WPCLI from "./WP-CLI";
+const Scraper = require("./Scraper");
+const WPCLI = require("./WP-CLI");
 
 class Index {
     constructor() {
@@ -9,8 +9,7 @@ class Index {
 
     async main() {
         let scrapedData = await Scraper.main();
-
-        let wpcli = new WPCLI();
+        let wpcli = new WPCLI(scrapedData);
     }
 }
 

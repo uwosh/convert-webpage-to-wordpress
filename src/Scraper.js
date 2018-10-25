@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 
-export default class Scraper {
+class Scraper {
     // goes to the site specified and grabs an array of news URLs that matches "campus/news/releases"
     static async fetchArticleURLs(browser, site) {
         // setup
@@ -162,80 +162,16 @@ export default class Scraper {
         return imagesByPost;
     };
 
-    // actually goes the the URL of the images and downloads them to the assets folder
-    static async downloadImages(browser, imageSources, path) {
-        // TODO: build image downloading functionality
-        for (let i = 0; i < imageSources.length; i++) {
-            let postImagePath = path + "/" + i;
-
-            // create a new folder for each post
-            if (!fs.existsSync(postImagePath)) {
-                fs.mkdirSync(postImagePath);
-            }
-
-            // if the blog post has an image in it, download the images
-            if (imageSources[i].length != 0) {
-                for (let j = 0; j < imageSources[i].length; j++) {
-                    let imageURL = imageSources[i][j].toString();
-                    let filename = imageURL.match(/[\w-]+\.(jpg|png|txt|jpeg)/g)[0];
-                    let imagePathWithFilename = postImagePath + "/" + filename;
-
-                    // go to image in browser
-                    const page = await browser.newPage();
-                    let imagePage = await page.goto(imageURL);
-
-                    // save the image to the proper directory
-                    fs.writeFileSync("./" + imagePathWithFilename, await imagePage.buffer(), function (err) {
-                        if (err) {
-                            return console.log(err);
-                        }
-                        console.log("The " + imagePathWithFilename + " was saved!");
-                    });
-                }
-            }
-        }
-        return true;
-    };
-
-    // purges the image assets folder
-    static async cleanSiteImageAssets(site) {
-        site = "assets/" + site;
-        // removing the site folder if it exists
-        let deleteFolderRecursive = function (site) {
-            if (fs.existsSync(site)) {
-                fs.readdirSync(site).forEach(function (file, index) {
-                    var curPath = site + "/" + file;
-                    if (fs.lstatSync(curPath).isDirectory()) {
-                        // recurse
-                        deleteFolderRecursive(curPath);
-                    } else {
-                        // delete file
-                        fs.unlinkSync(curPath);
-                    }
-                });
-                fs.rmdirSync(site);
-            }
-        };
-        deleteFolderRecursive(site);
-
-        // make directory if it exists
-        if (!fs.existsSync(site)) {
-            fs.mkdirSync(site);
-        }
-    };
-
     // worker for scraping the images
     static async scrapeImages(browser, articles, site, siteDir) {
         let imageSources = await this.scrapeImagesSources(browser, articles, site);
-        await this.cleanSiteImageAssets(siteDir);
-        let downloadImagesStatus = await this.downloadImages(
-            browser,
-            imageSources,
-            "assets/" + siteDir
-        );
-        return downloadImagesStatus ?
-            "Images successfully downloaded" :
-            "Error on image download";
+
+        // stitch the image sources into the article object
+        for (let i = 0; i < articles.length; i++) {
+            articles[i]["originalImageSources"] = imageSources[i];
+        }
+
+        return articles;
     };
 
     // checks to see if there is saved data on the local file system, if not, rerun the web scraping
@@ -271,13 +207,13 @@ export default class Scraper {
         let fdlArticles = await this.loadArticleData(browser, "assets/fdlData.json", fdlArticleURLs);
 
         // download images for each campus news story
-        await this.scrapeImages(
+        foxArticles = await this.scrapeImages(
             browser,
             foxArticles,
             foxSiteURL,
             foxSiteDir
         );
-        await this.scrapeImages(
+        fdlArticles = await this.scrapeImages(
             browser,
             fdlArticles,
             fdlSiteURL,
@@ -298,3 +234,5 @@ export default class Scraper {
         return scrappedData;
     }
 }
+
+module.exports = Scraper;
