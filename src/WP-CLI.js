@@ -127,7 +127,7 @@ class WPCLI {
             this.addSlashes(title) +
             "\" --post_category='" +
             category +
-            "' --post_author=" + userID + " --post_status=published";
+            "' --post_author=" + userID + " --post_status=publish";
         let response = execSync(command).toString();
 
         fs.unlinkSync(filePath); // delete temp file
