@@ -123,16 +123,27 @@ class WPCLI {
             site +
             " post create temp.txt --post_date='" +
             date +
-            "' --post_title='" +
-            title +
-            "' --post_category='" +
+            "' --post_title=\"" +
+            this.addSlashes(title) +
+            "\" --post_category='" +
             category +
-            "' --post_author=" + userID;
+            "' --post_author=" + userID + " --post_status=published";
         let response = execSync(command).toString();
 
         fs.unlinkSync(filePath); // delete temp file
 
         return response;
+    }
+
+    addSlashes(string) {
+        return string.replace(/\\/g, '\\\\').
+        replace(/\u0008/g, '\\b').
+        replace(/\t/g, '\\t').
+        replace(/\n/g, '\\n').
+        replace(/\f/g, '\\f').
+        replace(/\r/g, '\\r').
+        replace(/'/g, '\\\'').
+        replace(/"/g, '\\"');
     }
 
     // filters scraped data by site and sends articles to have image source attributes update to the new URLs
